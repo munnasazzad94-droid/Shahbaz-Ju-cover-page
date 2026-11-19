@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assignment Cover Page Builder — AMath 510</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* ============ PRINT SETUP ============ */
+    @page {
+        size: A4 portrait;
+        margin: 0;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #e2e8f0;
+        color: #0f172a;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .app {
+        display: flex;
+        align-items: flex-start;
+        min-height: 100vh;
+    }
+
+    /* ============ LEFT FORM PANEL ============ */
+    .panel {
+        width: 400px;
+        flex: 0 0 400px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+        background: #ffffff;
+        border-right: 1px solid #cbd5e1;
+        padding: 22px 20px 60px;
+    }
+
+    .panel-title {
+        font-family: 'Cinzel', Georgia, serif;
+        font-size: 19px;
+        font-weight: 700;
+        color: #1e3a8a;
+        letter-spacing: 0.5px;
+    }
+
+    .panel-sub {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 4px;
+        line-height: 1.5;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin: 16px 0 18px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 11px 10px;
+        border-radius: 7px;
+        border: none;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 13.5px;
+        cursor: pointer;
+        transition: background 0.18s, transform 0.1s;
+    }
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+        background: #1d4ed8;
+        color: #ffffff;
+    }
+    .btn-primary:hover { background: #2563eb; }
+
+    .btn-ghost {
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #cbd5e1;
+        flex: 0 0 auto;
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+    .btn-ghost:hover { background: #e2e8f0; }
+
+    .section {
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        margin-bottom: 14px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .section-head {
+        background: #f1f5f9;
+        padding: 9px 13px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+        color: #1e3a8a;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .section-body {
+        padding: 13px;
+        display: grid;
+        gap: 11px;
+    }
+
+    label {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+        width: 100%;
+        padding: 9px 11px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-family: inherit;
+        font-size: 13.5px;
+        color: #0f172a;
+        background: #fff;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input[type="file"] {
+        width: 100%;
+        font-family: inherit;
+        font-size: 12px;
+        color: #475569;
+    }
+
+    input[type="text"]:focus,
+    input[type="date"]:focus {
+        outline: none;
+        border-color: #1e3a8a;
+        box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.12);
+    }
+
+    .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #334155;
+        text-transform: none;
+        letter-spacing: 0;
+        cursor: pointer;
+        margin: 0;
+    }
+    .check input { width: 16px; height: 16px; accent-color: #1e3a8a; cursor: pointer; }
+
+    .hint {
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: #64748b;
+        background: #eff6ff;
+        border: 1px dashed #93c5fd;
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-top: 4px;
+    }
+    .hint strong { color: #1e3a8a; }
+
+    /* ============ RIGHT PREVIEW ============ */
+    .preview-area {
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .stage-outer {
+        position: relative;
+        margin: 0 auto;
+    }
+
+    .stage {
+        width: 210mm;
+        height: 297mm;
+        transform-origin: top left;
+    }
+
+    /* ============ A4 PAGE ============ */
+    .page {
+        width: 210mm;
+        height: 297mm;
+        background: #ffffff;
+        padding: 13mm;
+        box-shadow: 0 20px 45px rgba(15, 23, 42, 0.14);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .watermark {
+        position: absolute;
+        top: 52%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 390px;
+        opacity: 0.04;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .outer-frame {
+        width: 100%;
+        height: 100%;
+        border: 2.5px solid #1e3a8a;
+        padding: 5px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .inner-frame {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #93c5fd;
+        padding: 32px 38px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+        position: relative;
+        background: linear-gradient(180deg, rgba(239, 246, 255, 0.45) 0%, rgba(255, 255, 255, 0) 24%);
+    }
+
+    .corner {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border: 2px solid #1e3a8a;
+        background: #ffffff;
+    }
+    .corner.tl { top: -5px; left: -5px; }
+    .corner.tr { top: -5px; right: -5px; }
+    .corner.bl { bottom: -5px; left: -5px; }
+    .corner.br { bottom: -5px; right: -5px; }
+
+    /* Header */
+    .header { margin-top: 4px; }
+
+    .uni-name {
+        font-family: 'Cinzel', Georgia, serif;
+        font-size: 27px;
+        font-weight: 800;
+        color: #1e3a8a;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .dept-name {
+        font-size: 16.5px;
+        font-weight: 700;
+        color: #334155;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-bottom: 18px;
+    }
+
+    /* Logo */
+    .logo-wrap {
+        margin: 6px auto 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .logo-wrap img {
+        width: 152px;
+        height: auto;
+        object-fit: contain;
+    }
+
+    /* Program banner */
+    .program-banner {
+        border-top: 1px solid #cbd5e1;
+        border-bottom: 1px solid #cbd5e1;
+        padding: 13px 16px;
+        margin: 0 auto 22px;
+        width: 94%;
+        background: linear-gradient(90deg, rgba(248,250,252,0) 0%, rgba(241,245,249,0.85) 50%, rgba(248,250,252,0) 100%);
+    }
+
+    .program-title {
+        font-family: 'Cinzel', Georgia, serif;
+        font-size: 16.5px;
+        font-weight: 700;
+        color: #0f172a;
+        letter-spacing: 0.4px;
+        margin-bottom: 5px;
+    }
+
+    .program-sub {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0038d6;
+        letter-spacing: 0.5px;
+    }
+
+    /* Assignment box */
+    .assignment-box {
+        display: inline-block;
+        max-width: 92%;
+        border: 1.8px solid #0038d6;
+        padding: 9px 44px;
+        margin: 4px auto 24px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 56, 214, 0.06);
+    }
+
+    .assignment-box h2 {
+        font-family: 'Cinzel', Georgia, serif;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 4.5px;
+        color: #0038d6;
+        text-transform: uppercase;
+        margin-right: -4.5px;
+        overflow-wrap: break-word;
+    }
+
+    /* Course card */
+    .course-card {
+        width: 92%;
+        margin: 0 auto 22px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-left: 4.5px solid #1e3a8a;
+        border-radius: 0 6px 6px 0;
+        padding: 16px 24px;
+        text-align: left;
+    }
+
+    .course-row {
+        display: flex;
+        align-items: baseline;
+        padding: 6px 0;
+        font-size: 15.5px;
+    }
+
+    .course-row:first-child {
+        border-bottom: 1px dashed #cbd5e1;
+        padding-bottom: 10px;
+        margin-bottom: 6px;
+    }
+
+    .course-label {
+        width: 135px;
+        flex: 0 0 135px;
+        font-weight: 700;
+        color: #1e3a8a;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 0.8px;
+    }
+
+    .course-sep {
+        width: 20px;
+        flex: 0 0 20px;
+        font-weight: 700;
+        color: #64748b;
+    }
+
+    .course-val {
+        flex: 1;
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 16.5px;
+        overflow-wrap: anywhere;
+    }
+
+    /* Info cards */
+    .grid-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+        width: 92%;
+        margin: 0 auto 18px;
+        text-align: left;
+    }
+
+    .info-card {
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-card-header {
+        background: #1e3a8a;
+        color: #ffffff;
+        padding: 8px 16px;
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .info-card-body {
+        padding: 16px 18px;
+        font-size: 14px;
+        line-height: 1.65;
+        color: #334155;
+        flex: 1;
+        overflow-wrap: anywhere;
+    }
+
+    .person-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 6px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .info-card-body p { margin-bottom: 3px; }
+    .info-card-body strong { color: #0f172a; font-weight: 600; }
+
+    /* Footer */
+    .footer {
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+        width: 92%;
+        margin: 0 auto 2px;
+        font-size: 14.5px;
+        font-weight: 600;
+        color: #334155;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .date-val {
+        border-bottom: 1.5px dashed #1e3a8a;
+        padding: 1px 12px;
+        min-width: 130px;
+        color: #1e3a8a;
+        font-weight: 700;
+    }
+    .date-val.placeholder { color: #94a3b8; }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 980px) {
+        .app { flex-direction: column; }
+        .panel {
+            width: 100%;
+            flex: none;
+            height: auto;
+            position: static;
+            border-right: none;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 24px;
+        }
+        .preview-area { width: 100%; padding: 18px 8px; }
+    }
+
+    /* ============ PRINT ============ */
+    @media print {
+        body { background: #ffffff; }
+        .panel { display: none !important; }
+        .app { display: block; }
+        .preview-area { padding: 0; display: block; }
+        .stage-outer { width: auto !important; height: auto !important; margin: 0 !important; }
+        .stage { transform: none !important; }
+        .page {
+            box-shadow: none !important;
+            margin: 0;
+            width: 210mm;
+            height: 297mm;
+        }
+        .date-val {
+            border-bottom: none;
+            color: #0f172a;
+            padding: 0 4px;
+        }
+        .date-val.placeholder { color: #0f172a; }
+    }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ==================== FORM PANEL ==================== -->
+    <aside class="panel">
+        <div class="panel-title">Cover Page Builder</div>
+        <div class="panel-sub">Fill the form — the A4 page updates live. Nothing is uploaded anywhere.</div>
+
+        <div class="actions">
+            <button class="btn btn-primary" type="button" onclick="window.print()">🖨 Print / Save PDF</button>
+            <button class="btn btn-ghost" type="button" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="section">
+            <div class="section-head">Institution</div>
+            <div class="section-body">
+                <div>
+                    <label for="fUni">University / Institute</label>
+                    <input type="text" id="fUni" value="Jahangirnagar University">
+                </div>
+                <div>
+                    <label for="fDept">Department</label>
+                    <input type="text" id="fDept" value="Department of Mathematics">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">Program</div>
+            <div class="section-body">
+                <div>
+                    <label for="fProgram">Program Title</label>
+                    <input type="text" id="fProgram" value="Master of Science in Applied Mathematics (MSAM)">
+                </div>
+                <div>
+                    <label for="fProgramSub">Program Subtitle</label>
+                    <input type="text" id="fProgramSub" value="Weekend Program">
+                </div>
+                <div>
+                    <label for="fDocTitle">Document Title</label>
+                    <input type="text" id="fDocTitle" value="Assignment">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">Course</div>
+            <div class="section-body">
+                <div>
+                    <label for="fCourseTitle">Course Title</label>
+                    <input type="text" id="fCourseTitle" value="Advance Numerical Methods">
+                </div>
+                <div>
+                    <label for="fCourseCode">Course Code</label>
+                    <input type="text" id="fCourseCode" value="AMath 510">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">Submitted By</div>
+            <div class="section-body">
+                <div>
+                    <label for="fByName">Full Name</label>
+                    <input type="text" id="fByName" value="Kazi Shahbaz Bin Mofazzal">
+                </div>
+                <div>
+                    <label for="fStudentId">Student ID</label>
+                    <input type="text" id="fStudentId" value="20260031025">
+                </div>
+                <div>
+                    <label for="fByProgram">Program</label>
+                    <input type="text" id="fByProgram" value="MSAM (Weekend)">
+                </div>
+                <div>
+                    <label for="fByDept">Department</label>
+                    <input type="text" id="fByDept" value="Department of Mathematics">
+                </div>
+                <div>
+                    <label for="fByUni">University</label>
+                    <input type="text" id="fByUni" value="Jahangirnagar University">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">Submitted To</div>
+            <div class="section-body">
+                <div>
+                    <label for="fToName">Teacher's Name</label>
+                    <input type="text" id="fToName" value="Prof. Dr. Faruque Ahmed">
+                </div>
+                <div>
+                    <label for="fToDesig">Designation (optional)</label>
+                    <input type="text" id="fToDesig" value="">
+                </div>
+                <div>
+                    <label for="fToDept">Department</label>
+                    <input type="text" id="fToDept" value="Department of Mathematics">
+                </div>
+                <div>
+                    <label for="fToUni">University</label>
+                    <input type="text" id="fToUni" value="Jahangirnagar University">
+                </div>
+                <div>
+                    <label for="fToAddr">Address</label>
+                    <input type="text" id="fToAddr" value="Savar, Dhaka-1342">
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-head">Date &amp; Logo</div>
+            <div class="section-body">
+                <div>
+                    <label for="fDate">Date of Submission</label>
+                    <input type="date" id="fDate">
+                </div>
+                <div>
+                    <label for="fLogoUrl">Logo / Watermark Image URL</label>
+                    <input type="text" id="fLogoUrl" value="https://i.postimg.cc/tJhZjwJ5/download-(1).jpg">
+                </div>
+                <div>
+                    <label for="fLogoFile">…or upload an image</label>
+                    <input type="file" id="fLogoFile" accept="image/*">
+                </div>
+                <label class="check" for="fShowLogo">
+                    <input type="checkbox" id="fShowLogo" checked>
+                    Show logo &amp; watermark
+                </label>
+            </div>
+        </div>
+
+        <div class="hint">
+            <strong>Print tip:</strong> In the print dialog choose <strong>Destination: Save as PDF</strong>,
+            <strong>Paper: A4</strong>, <strong>Margins: None</strong> and tick
+            <strong>Background graphics</strong> so the colours and frame come out properly.
+        </div>
+    </aside>
+
+    <!-- ==================== A4 PREVIEW ==================== -->
+    <main class="preview-area" id="previewArea">
+        <div class="stage-outer" id="stageOuter">
+            <div class="stage" id="stage">
+                <div class="page">
+
+                    <img class="watermark" id="outWatermark" src="https://i.postimg.cc/tJhZjwJ5/download-(1).jpg" alt="">
+
+                    <div class="outer-frame">
+                        <div class="inner-frame">
+                            <span class="corner tl"></span>
+                            <span class="corner tr"></span>
+                            <span class="corner bl"></span>
+                            <span class="corner br"></span>
+
+                            <!-- Top University Header -->
+                            <div class="header">
+                                <div class="uni-name" id="outUni">Jahangirnagar University</div>
+                                <div class="dept-name" id="outDept">Department of Mathematics</div>
+                            </div>
+
+                            <!-- Crest -->
+                            <div class="logo-wrap" id="logoWrap">
+                                <img id="outLogo" src="https://i.postimg.cc/tJhZjwJ5/download-(1).jpg" alt="University Emblem">
+                            </div>
+
+                            <!-- Program banner + document title -->
+                            <div>
+                                <div class="program-banner">
+                                    <div class="program-title" id="outProgram">Master of Science in Applied Mathematics (MSAM)</div>
+                                    <div class="program-sub" id="outProgramSub">Weekend Program</div>
+                                </div>
+
+                                <div class="assignment-box">
+                                    <h2 id="outDocTitle">Assignment</h2>
+                                </div>
+                            </div>
+
+                            <!-- Course info -->
+                            <div class="course-card">
+                                <div class="course-row">
+                                    <div class="course-label">Course Title</div>
+                                    <div class="course-sep">:</div>
+                                    <div class="course-val" id="outCourseTitle">Advance Numerical Methods</div>
+                                </div>
+                                <div class="course-row">
+                                    <div class="course-label">Course Code</div>
+                                    <div class="course-sep">:</div>
+                                    <div class="course-val" id="outCourseCode">AMath 510</div>
+                                </div>
+                            </div>
+
+                            <!-- Submitted by / to -->
+                            <div class="grid-cards">
+                                <div class="info-card">
+                                    <div class="info-card-header">Submitted By</div>
+                                    <div class="info-card-body">
+                                        <div class="person-name" id="outByName">Kazi Shahbaz Bin Mofazzal</div>
+                                        <p id="outStudentIdLine"><strong>Student ID:</strong> <span id="outStudentIdVal">20260031025</span></p>
+                                        <p id="outByProgramLine"><strong>Program:</strong> <span id="outByProgramVal">MSAM (Weekend)</span></p>
+                                        <p id="outByDept">Department of Mathematics</p>
+                                        <p id="outByUni">Jahangirnagar University</p>
+                                    </div>
+                                </div>
+
+                                <div class="info-card">
+                                    <div class="info-card-header">Submitted To</div>
+                                    <div class="info-card-body">
+                                        <div class="person-name" id="outToName">Prof. Dr. Faruque Ahmed</div>
+                                        <p id="outToDesig"></p>
+                                        <p id="outToDept">Department of Mathematics</p>
+                                        <p id="outToUni">Jahangirnagar University</p>
+                                        <p id="outToAddr">Savar, Dhaka-1342</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="footer">
+                                <span>Date of Submission:</span>
+                                <span class="date-val placeholder" id="outDate">DD / MM / YYYY</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    const $ = (id) => document.getElementById(id);
+    const val = (id) => $(id).value;
+
+    const DEFAULT_LOGO = "https://i.postimg.cc/tJhZjwJ5/download-(1).jpg";
+    const STORAGE_KEY = "amath510-cover-page-v2";
+
+    /* ---------- helpers ---------- */
+    function setText(id, text, hideIfEmpty) {
+        const el = $(id);
+        if (!el) return;
+        el.textContent = text;
+        if (hideIfEmpty) el.style.display = text.trim() ? "" : "none";
+    }
+
+    /* ---------- main render ---------- */
+    function render() {
+        /* institution */
+        setText("outUni", val("fUni"));
+        setText("outDept", val("fDept"));
+
+        /* program */
+        setText("outProgram", val("fProgram"));
+        setText("outProgramSub", val("fProgramSub"), true);
+        setText("outDocTitle", val("fDocTitle").trim() || "Assignment");
+
+        /* course */
+        setText("outCourseTitle", val("fCourseTitle"));
+        setText("outCourseCode", val("fCourseCode"));
+
+        /* submitted by */
+        setText("outByName", val("fByName"));
+
+        const sid = val("fStudentId").trim();
+        $("outStudentIdVal").textContent = sid;
+        $("outStudentIdLine").style.display = sid ? "" : "none";
+
+        const prog = val("fByProgram").trim();
+        $("outByProgramVal").textContent = prog;
+        $("outByProgramLine").style.display = prog ? "" : "none";
+
+        setText("outByDept", val("fByDept"), true);
+        setText("outByUni", val("fByUni"), true);
+
+        /* submitted to */
+        setText("outToName", val("fToName"));
+        setText("outToDesig", val("fToDesig"), true);
+        setText("outToDept", val("fToDept"), true);
+        setText("outToUni", val("fToUni"), true);
+        setText("outToAddr", val("fToAddr"), true);
+
+        /* date */
+        const d = val("fDate");
+        let dateText = "DD / MM / YYYY";
+        if (d) {
+            const p = d.split("-"); // yyyy-mm-dd
+            dateText = p[2] + " / " + p[1] + " / " + p[0];
+        }
+        const dateEl = $("outDate");
+        dateEl.textContent = dateText;
+        dateEl.classList.toggle("placeholder", !d);
+
+        /* logo */
+        const show = $("fShowLogo").checked;
+        $("outLogo").style.display = show ? "" : "none";
+        $("outWatermark").style.display = show ? "" : "none";
+    }
+
+    /* ---------- image handling ---------- */
+    function setLogo(url) {
+        if (!url) return;
+        $("outLogo").src = url;
+        $("outWatermark").src = url;
+    }
+
+    $("fLogoUrl").addEventListener("input", function () {
+        setLogo(this.value.trim());
+    });
+
+    $("fLogoFile").addEventListener("change", function (e) {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => setLogo(ev.target.result);
+        reader.readAsDataURL(file);
+    });
+
+    /* ---------- persistence ---------- */
+    function saveState() {
+        try {
+            const data = {};
+            document.querySelectorAll(".panel input[type='text'], .panel input[type='date']").forEach((el) => {
+                if (el.id) data[el.id] = el.value;
+            });
+            data.fShowLogo = $("fShowLogo").checked;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) { /* storage may be blocked — ignore */ }
+    }
+
+    function loadState() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const data = JSON.parse(raw);
+            Object.keys(data).forEach((key) => {
+                const el = $(key);
+                if (!el) return;
+                if (el.type === "checkbox") el.checked = !!data[key];
+                else el.value = data[key];
+            });
+        } catch (e) { /* ignore */ }
+    }
+
+    /* ---------- wiring ---------- */
+    document.querySelectorAll(".panel input").forEach((el) => {
+        el.addEventListener("input", () => { render(); saveState(); });
+        el.addEventListener("change", () => { render(); saveState(); });
+    });
+
+    $("resetBtn").addEventListener("click", () => {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+
+        document.querySelectorAll(".panel input[type='text'], .panel input[type='date']").forEach((el) => {
+            el.value = el.defaultValue;
+        });
+        $("fShowLogo").checked = $("fShowLogo").defaultChecked;
+        $("fLogoFile").value = "";
+        $("fLogoUrl").value = DEFAULT_LOGO;
+        setLogo(DEFAULT_LOGO);
+
+        render();
+    });
+
+    /* ---------- preview auto-scaling ---------- */
+    const MM_TO_PX = 96 / 25.4;
+    const PAGE_W = 210 * MM_TO_PX;
+    const PAGE_H = 297 * MM_TO_PX;
+
+    function fitStage() {
+        const area = $("previewArea");
+        const stage = $("stage");
+        const outer = $("stageOuter");
+        if (!area || !stage || !outer) return;
+
+        const style = window.getComputedStyle(area);
+        const avail = area.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+        const scale = Math.min(1, Math.max(0.2, avail / PAGE_W));
+
+        stage.style.transform = "scale(" + scale + ")";
+        outer.style.width = (PAGE_W * scale) + "px";
+        outer.style.height = (PAGE_H * scale) + "px";
+    }
+
+    window.addEventListener("resize", fitStage);
+    window.addEventListener("orientationchange", fitStage);
+
+    /* ---------- init ---------- */
+    loadState();
+    render();
+    fitStage();
+
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(fitStage);
+    }
+    window.addEventListener("load", fitStage);
+})();
+</script>
+
+</body>
+</html>
